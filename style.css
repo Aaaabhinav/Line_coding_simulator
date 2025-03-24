@@ -1,0 +1,234 @@
+/* Line Coding Visualization Styles */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+#waveform {
+    margin-top: 20px;
+}
+
+.view-options {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+.view-comparison {
+    margin-top: 8px;
+}
+
+.chart-container {
+    margin-bottom: 20px;
+}
+
+/* 1-Column View */
+.one-column .chart-container {
+    width: 100%; /* Full width */
+}
+
+/* 2-Column View */
+.two-column {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.two-column .chart-container {
+    width: calc(50% - 10px); /* Half width with gap */
+}
+
+/* Hide charts */
+.hidden {
+    display: none;
+}
+
+/* Comparison section */
+.comparison-section {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.comparison-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.back-button {
+    padding: 8px 15px;
+    background-color: #607D8B;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.back-button:hover {
+    background-color: #455A64;
+    transform: translateY(-2px);
+}
+
+.back-button:active {
+    transform: translateY(0);
+}
+
+.comparison-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.comparison-selects {
+    display: flex;
+    gap: 20px;
+}
+
+.select-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.comparison-section button {
+    padding: 8px 15px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    height: fit-content;
+    align-self: flex-end;
+}
+
+.comparison-section button:hover {
+    background-color: #0b7dda;
+}
+
+.comparison-row {
+    display: flex;
+    gap: 20px;
+}
+
+.comparison-row .chart-container {
+    width: calc(50% - 10px);
+    height: 300px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    background-color: white;
+}
+
+/* Playback Controls Styling */
+.playback-controls {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.controls-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.playback-controls button {
+    padding: 8px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.playback-controls button:hover {
+    background-color: #45a049;
+}
+
+.playback-controls button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.arrow {
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+    margin: 0 5px;
+}
+
+.right {
+    transform: rotate(-45deg);
+}
+
+.left {
+    transform: rotate(135deg);
+}
+
+.speed-control {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.time-control {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#timeSlider {
+    width: 100%;
+    margin: 10px 0;
+}
+
+.time-labels {
+    display: flex;
+    justify-content: center;
+}
+
+.toggle-comparison-btn {
+    padding: 10px 20px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.toggle-comparison-btn:hover {
+    background-color: #0b7dda;
+    transform: translateY(-2px);
+}
+
+.toggle-comparison-btn:active {
+    transform: translateY(0);
+}

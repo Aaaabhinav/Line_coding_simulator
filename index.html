@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Line Coding Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Line Coding Schemes Visualization</h1>
+    <label for="binaryInput">Enter Binary Sequence:</label>
+    <input type="text" id="binaryInput" placeholder="e.g., 1010110">
+    <button onclick="generateWaveforms()">Generate Waveforms</button>
+    <div class="view-options">
+        <label for="viewMode">View Mode:</label>
+        <select id="viewMode" onchange="changeViewMode()">
+            <option value="one-column">1 Column (All Charts)</option>
+            <option value="two-column">2 Columns (All Charts)</option>
+            <option value="nrzL">NRZ-L</option>
+            <option value="nrzI">NRZ-I</option>
+            <option value="rz">RZ</option>
+            <option value="ami">AMI</option>
+            <option value="pseudoternary">Pseudoternary</option>
+            <option value="manchester">Manchester</option>
+        </select>
+        <div class="view-comparison">
+            <button id="toggleComparisonBtn" class="toggle-comparison-btn">Show Comparison View</button>
+        </div>
+    </div>
+
+    <!-- Playback Controls - Now outside of view containers so it's available in both modes -->
+    <div class="playback-controls">
+        <h2>Animation Controls</h2>
+        <div class="controls-container">
+            <button id="backwardBtn" title="Step backward"><i class="arrow left"></i> Backward</button>
+            <button id="playBtn" title="Play/Pause">Play</button>
+            <button id="forwardBtn" title="Step forward">Forward <i class="arrow right"></i></button>
+            <div class="speed-control">
+                <label for="animationSpeed">Speed:</label>
+                <input type="range" id="animationSpeed" min="0.5" max="5" step="0.5" value="1">
+                <span id="speedValue">1x</span>
+            </div>
+        </div>
+        <div class="time-control">
+            <input type="range" id="timeSlider" min="0" max="100" value="0">
+            <div class="time-labels">
+                <span id="currentTime">0.0s</span> / <span id="totalTime">0.0s</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Waveform Display -->
+    <div id="waveform" class="one-column">
+        <div class="chart-container" id="nrzLContainer"><canvas id="nrzLChart"></canvas></div>
+        <div class="chart-container" id="nrzIContainer"><canvas id="nrzIChart"></canvas></div>
+        <div class="chart-container" id="rzContainer"><canvas id="rzChart"></canvas></div>
+        <div class="chart-container" id="amiContainer"><canvas id="amiChart"></canvas></div>
+        <div class="chart-container" id="pseudoternaryContainer"><canvas id="pseudoternaryChart"></canvas></div>
+        <div class="chart-container" id="manchesterContainer"><canvas id="manchesterChart"></canvas></div>
+    </div>
+
+    <!-- Comparison Section -->
+    <div class="comparison-section" id="comparisonSection" style="display: none;">
+        <div class="comparison-header">
+            <h2>Compare Two Charts</h2>
+            <button id="backToWaveformsBtn" class="back-button"><i class="arrow left"></i> Back to Waveforms</button>
+        </div>
+        <div class="comparison-controls">
+            <div class="comparison-selects">
+                <div class="select-group">
+                    <label for="compareChart1">Select Chart 1:</label>
+                    <select id="compareChart1">
+                        <option value="nrzL">NRZ-L</option>
+                        <option value="nrzI">NRZ-I</option>
+                        <option value="rz">RZ</option>
+                        <option value="ami">AMI</option>
+                        <option value="pseudoternary">Pseudoternary</option>
+                        <option value="manchester">Manchester</option>
+                    </select>
+                </div>
+                <div class="select-group">
+                    <label for="compareChart2">Select Chart 2:</label>
+                    <select id="compareChart2">
+                        <option value="nrzL">NRZ-L</option>
+                        <option value="nrzI" selected>NRZ-I</option>
+                        <option value="rz">RZ</option>
+                        <option value="ami">AMI</option>
+                        <option value="pseudoternary">Pseudoternary</option>
+                        <option value="manchester">Manchester</option>
+                    </select>
+                </div>
+            </div>
+            <button onclick="compareCharts()">Compare Charts</button>
+        </div>
+        <div class="comparison-row">
+            <div class="chart-container" id="compareChart1Container"><canvas id="compareChart1Canvas"></canvas></div>
+            <div class="chart-container" id="compareChart2Container"><canvas id="compareChart2Canvas"></canvas></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
