@@ -6,98 +6,219 @@
     <title>Line Coding Visualization</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <h1>Line Coding Schemes Visualization</h1>
-    <label for="binaryInput">Enter Binary Sequence:</label>
-    <input type="text" id="binaryInput" placeholder="e.g., 1010110">
-    <button onclick="generateWaveforms()">Generate Waveforms</button>
-    <div class="view-options">
-        <label for="viewMode">View Mode:</label>
-        <select id="viewMode" onchange="changeViewMode()">
-            <option value="one-column">1 Column (All Charts)</option>
-            <option value="two-column">2 Columns (All Charts)</option>
-            <option value="nrzL">NRZ-L</option>
-            <option value="nrzI">NRZ-I</option>
-            <option value="rz">RZ</option>
-            <option value="ami">AMI</option>
-            <option value="pseudoternary">Pseudoternary</option>
-            <option value="manchester">Manchester</option>
-        </select>
-        <div class="view-comparison">
-            <button id="toggleComparisonBtn" class="toggle-comparison-btn">Show Comparison View</button>
-        </div>
-    </div>
+    <header>
+        <h1>Line Coding Schemes Visualization</h1>
+    </header>
 
-    <!-- Playback Controls - Now outside of view containers so it's available in both modes -->
-    <div class="playback-controls">
-        <h2>Animation Controls</h2>
-        <div class="controls-container">
-            <button id="backwardBtn" title="Step backward"><i class="arrow left"></i> Backward</button>
-            <button id="playBtn" title="Play/Pause">Play</button>
-            <button id="forwardBtn" title="Step forward">Forward <i class="arrow right"></i></button>
-            <div class="speed-control">
-                <label for="animationSpeed">Speed:</label>
-                <input type="range" id="animationSpeed" min="0.5" max="5" step="0.5" value="1">
-                <span id="speedValue">1x</span>
+    <main>
+        <section class="input-section">
+            <div class="input-group">
+                <label for="binaryInput">Enter Binary Sequence:</label>
+                <input type="text" id="binaryInput" placeholder="e.g., 1010110" aria-label="Binary sequence input">
+                <button onclick="generateWaveforms()" aria-label="Generate waveforms">
+                    <i class="fas fa-play"></i> Generate
+                </button>
             </div>
-        </div>
-        <div class="time-control">
-            <input type="range" id="timeSlider" min="0" max="100" value="0">
-            <div class="time-labels">
-                <span id="currentTime">0.0s</span> / <span id="totalTime">0.0s</span>
+        </section>
+
+        <div class="view-options">
+            <div class="view-mode-group">
+                <label for="viewMode">View Mode:</label>
+                <select id="viewMode" onchange="changeViewMode()" aria-label="Select view mode">
+                    <option value="one-column">All Charts</option>
+                    <option value="nrzL">NRZ-L</option>
+                    <option value="nrzI">NRZ-I</option>
+                    <option value="rz">RZ</option>
+                    <option value="ami">AMI</option>
+                    <option value="pseudoternary">Pseudoternary</option>
+                    <option value="manchester">Manchester</option>
+                </select>
             </div>
+            <button id="toggleComparisonBtn" class="toggle-comparison-btn" aria-label="Toggle comparison view">
+                <i class="fas fa-exchange-alt"></i> Show Comparison
+            </button>
         </div>
-    </div>
 
-    <!-- Main Waveform Display -->
-    <div id="waveform" class="one-column">
-        <div class="chart-container" id="nrzLContainer"><canvas id="nrzLChart"></canvas></div>
-        <div class="chart-container" id="nrzIContainer"><canvas id="nrzIChart"></canvas></div>
-        <div class="chart-container" id="rzContainer"><canvas id="rzChart"></canvas></div>
-        <div class="chart-container" id="amiContainer"><canvas id="amiChart"></canvas></div>
-        <div class="chart-container" id="pseudoternaryContainer"><canvas id="pseudoternaryChart"></canvas></div>
-        <div class="chart-container" id="manchesterContainer"><canvas id="manchesterChart"></canvas></div>
-    </div>
-
-    <!-- Comparison Section -->
-    <div class="comparison-section" id="comparisonSection" style="display: none;">
-        <div class="comparison-header">
-            <h2>Compare Two Charts</h2>
-            <button id="backToWaveformsBtn" class="back-button"><i class="arrow left"></i> Back to Waveforms</button>
-        </div>
-        <div class="comparison-controls">
-            <div class="comparison-selects">
-                <div class="select-group">
-                    <label for="compareChart1">Select Chart 1:</label>
-                    <select id="compareChart1">
-                        <option value="nrzL">NRZ-L</option>
-                        <option value="nrzI">NRZ-I</option>
-                        <option value="rz">RZ</option>
-                        <option value="ami">AMI</option>
-                        <option value="pseudoternary">Pseudoternary</option>
-                        <option value="manchester">Manchester</option>
-                    </select>
-                </div>
-                <div class="select-group">
-                    <label for="compareChart2">Select Chart 2:</label>
-                    <select id="compareChart2">
-                        <option value="nrzL">NRZ-L</option>
-                        <option value="nrzI" selected>NRZ-I</option>
-                        <option value="rz">RZ</option>
-                        <option value="ami">AMI</option>
-                        <option value="pseudoternary">Pseudoternary</option>
-                        <option value="manchester">Manchester</option>
-                    </select>
+        <section class="playback-controls">
+            <h2>Animation Controls</h2>
+            <div class="controls-container">
+                <button id="backwardBtn" title="Step backward" aria-label="Step backward">
+                    <i class="fas fa-step-backward"></i>
+                </button>
+                <button id="playBtn" title="Play/Pause" aria-label="Play/Pause">
+                    <i class="fas fa-play"></i>
+                </button>
+                <button id="forwardBtn" title="Step forward" aria-label="Step forward">
+                    <i class="fas fa-step-forward"></i>
+                </button>
+                <div class="speed-control">
+                    <label for="animationSpeed">Speed:</label>
+                    <input type="range" id="animationSpeed" min="0.5" max="5" step="0.5" value="1" aria-label="Animation speed">
+                    <span id="speedValue">1x</span>
                 </div>
             </div>
-            <button onclick="compareCharts()">Compare Charts</button>
-        </div>
-        <div class="comparison-row">
-            <div class="chart-container" id="compareChart1Container"><canvas id="compareChart1Canvas"></canvas></div>
-            <div class="chart-container" id="compareChart2Container"><canvas id="compareChart2Canvas"></canvas></div>
-        </div>
-    </div>
+            <div class="time-control">
+                <input type="range" id="timeSlider" min="0" max="100" value="0" aria-label="Time position">
+                <div class="time-labels">
+                    <span id="currentTime">0.0s</span> / <span id="totalTime">0.0s</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="waveform" class="one-column">
+            <div class="chart-container" id="nrzLContainer">
+                <h3>NRZ-L</h3>
+                <div class="description-toggle">
+                    <button class="toggle-btn" onclick="toggleDescription('nrzLDesc')">
+                        <i class="fas fa-info-circle"></i> About NRZ-L
+                    </button>
+                    <div id="nrzLDesc" class="description-content">
+                        NRZ-L (Non-Return-to-Zero Level) is a simple line coding scheme where:
+                        - 1 is represented by a high voltage level
+                        - 0 is represented by a low voltage level
+                        - The signal maintains its level throughout the bit duration
+                        - No transition occurs between bits of the same value
+                        - Prone to baseline wandering with long sequences of 1s or 0s
+                    </div>
+                </div>
+                <canvas id="nrzLChart"></canvas>
+            </div>
+            <div class="chart-container" id="nrzIContainer">
+                <h3>NRZ-I</h3>
+                <div class="description-toggle">
+                    <button class="toggle-btn" onclick="toggleDescription('nrzIDesc')">
+                        <i class="fas fa-info-circle"></i> About NRZ-I
+                    </button>
+                    <div id="nrzIDesc" class="description-content">
+                        NRZ-I (Non-Return-to-Zero Inverted) is a differential encoding scheme where:
+                        - 1 is represented by a transition at the beginning of the bit interval
+                        - 0 is represented by no transition
+                        - The signal maintains its level throughout the bit duration
+                        - More reliable than NRZ-L for clock recovery
+                        - Still susceptible to baseline wandering
+                    </div>
+                </div>
+                <canvas id="nrzIChart"></canvas>
+            </div>
+            <div class="chart-container" id="rzContainer">
+                <h3>RZ</h3>
+                <div class="description-toggle">
+                    <button class="toggle-btn" onclick="toggleDescription('rzDesc')">
+                        <i class="fas fa-info-circle"></i> About RZ
+                    </button>
+                    <div id="rzDesc" class="description-content">
+                        RZ (Return-to-Zero) is a line coding scheme where:
+                        - 1 is represented by a high voltage for half the bit duration
+                        - 0 is represented by a low voltage for the entire bit duration
+                        - The signal returns to zero in the middle of each bit interval
+                        - Better for clock recovery than NRZ schemes
+                        - Requires more bandwidth than NRZ schemes
+                    </div>
+                </div>
+                <canvas id="rzChart"></canvas>
+            </div>
+            <div class="chart-container" id="amiContainer">
+                <h3>AMI</h3>
+                <div class="description-toggle">
+                    <button class="toggle-btn" onclick="toggleDescription('amiDesc')">
+                        <i class="fas fa-info-circle"></i> About AMI
+                    </button>
+                    <div id="amiDesc" class="description-content">
+                        AMI (Alternate Mark Inversion) is a bipolar encoding scheme where:
+                        - 1 is represented by alternating positive and negative pulses
+                        - 0 is represented by zero voltage
+                        - No DC component, reducing baseline wandering
+                        - Good for long-distance transmission
+                        - Requires three voltage levels
+                    </div>
+                </div>
+                <canvas id="amiChart"></canvas>
+            </div>
+            <div class="chart-container" id="pseudoternaryContainer">
+                <h3>Pseudoternary</h3>
+                <div class="description-toggle">
+                    <button class="toggle-btn" onclick="toggleDescription('pseudoternaryDesc')">
+                        <i class="fas fa-info-circle"></i> About Pseudoternary
+                    </button>
+                    <div id="pseudoternaryDesc" class="description-content">
+                        Pseudoternary is a bipolar encoding scheme where:
+                        - 0 is represented by alternating positive and negative pulses
+                        - 1 is represented by zero voltage
+                        - Similar to AMI but with inverted logic
+                        - No DC component, reducing baseline wandering
+                        - Good for long-distance transmission
+                    </div>
+                </div>
+                <canvas id="pseudoternaryChart"></canvas>
+            </div>
+            <div class="chart-container" id="manchesterContainer">
+                <h3>Manchester</h3>
+                <div class="description-toggle">
+                    <button class="toggle-btn" onclick="toggleDescription('manchesterDesc')">
+                        <i class="fas fa-info-circle"></i> About Manchester
+                    </button>
+                    <div id="manchesterDesc" class="description-content">
+                        Manchester encoding is a self-clocking line code where:
+                        - 1 is represented by a high-to-low transition in the middle of the bit
+                        - 0 is represented by a low-to-high transition in the middle of the bit
+                        - Always has a transition in the middle of each bit interval
+                        - Excellent for clock recovery
+                        - Requires twice the bandwidth of NRZ schemes
+                    </div>
+                </div>
+                <canvas id="manchesterChart"></canvas>
+            </div>
+        </section>
+
+        <section class="comparison-section" id="comparisonSection" style="display: none;">
+            <div class="comparison-header">
+                <h2>Compare Two Charts</h2>
+                <button id="backToWaveformsBtn" class="back-button" aria-label="Back to waveforms">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
+            <div class="comparison-controls">
+                <div class="comparison-selects">
+                    <div class="select-group">
+                        <label for="compareChart1">Select Chart 1:</label>
+                        <select id="compareChart1" aria-label="Select first chart for comparison">
+                            <option value="nrzL">NRZ-L</option>
+                            <option value="nrzI">NRZ-I</option>
+                            <option value="rz">RZ</option>
+                            <option value="ami">AMI</option>
+                            <option value="pseudoternary">Pseudoternary</option>
+                            <option value="manchester">Manchester</option>
+                        </select>
+                    </div>
+                    <div class="select-group">
+                        <label for="compareChart2">Select Chart 2:</label>
+                        <select id="compareChart2" aria-label="Select second chart for comparison">
+                            <option value="nrzL">NRZ-L</option>
+                            <option value="nrzI" selected>NRZ-I</option>
+                            <option value="rz">RZ</option>
+                            <option value="ami">AMI</option>
+                            <option value="pseudoternary">Pseudoternary</option>
+                            <option value="manchester">Manchester</option>
+                        </select>
+                    </div>
+                </div>
+                <button onclick="compareCharts()" aria-label="Compare selected charts">
+                    <i class="fas fa-sync"></i> Compare
+                </button>
+            </div>
+            <div class="comparison-row">
+                <div class="chart-container" id="compareChart1Container">
+                    <canvas id="compareChart1Canvas"></canvas>
+                </div>
+                <div class="chart-container" id="compareChart2Container">
+                    <canvas id="compareChart2Canvas"></canvas>
+                </div>
+            </div>
+        </section>
+    </main>
 
     <script src="script.js"></script>
 </body>

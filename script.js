@@ -239,32 +239,29 @@ function renderAnimatedWaveforms(upToTime) {
 function changeViewMode() {
     const viewMode = document.getElementById('viewMode').value;
     const waveformContainer = document.getElementById('waveform');
-
-    // Hide all charts initially
-    const chartContainers = document.querySelectorAll('.chart-container');
-    chartContainers.forEach(container => container.style.display = 'none');
-
+    
     // Remove existing layout classes
-    waveformContainer.classList.remove('one-column', 'two-column');
-
+    waveformContainer.classList.remove('one-column');
+    
+    // Add the appropriate class based on view mode
     if (viewMode === 'one-column') {
         waveformContainer.classList.add('one-column');
-        // Show all charts in one column
-        chartContainers.forEach(container => container.style.display = 'block');
-    } else if (viewMode === 'two-column') {
-        waveformContainer.classList.add('two-column');
-        // Show all charts in two columns
-        chartContainers.forEach(container => container.style.display = 'block');
+        // Show all charts
+        const chartContainers = document.querySelectorAll('.chart-container');
+        chartContainers.forEach(container => {
+            container.style.display = 'flex';
+        });
     } else {
         // Show only the selected chart
+        const chartContainers = document.querySelectorAll('.chart-container');
+        chartContainers.forEach(container => {
+            container.style.display = 'none';
+        });
         const selectedContainer = document.getElementById(`${viewMode}Container`);
         if (selectedContainer) {
-            selectedContainer.style.display = 'block';
+            selectedContainer.style.display = 'flex';
         }
     }
-
-    // Re-render the charts to adjust their size
-    generateWaveforms();
 }
 
 function compareCharts() {
@@ -510,25 +507,97 @@ function generateManchester(binaryArray) {
     return data;
 }
 
+function calculateBaselineWandering(data) {
+    if (!data || data.length === 0) return 0;
+    
+    // Calculate average voltage level
+    const sum = data.reduce((acc, point) => acc + point.y, 0);
+    const average = sum / data.length;
+    
+    // Calculate percentage of baseline wandering
+    // Assuming the signal should be centered around 0
+    const maxAmplitude = Math.max(...data.map(point => Math.abs(point.y)));
+    const wanderingPercentage = (Math.abs(average) / maxAmplitude) * 100;
+    
+    return wanderingPercentage;
+}
+
 function renderWaveform(canvasId, label, data) {
     const ctx = document.getElementById(canvasId).getContext('2d');
+    const wanderingPercentage = calculateBaselineWandering(data);
+    
+    // Calculate average voltage level for baseline
+    const sum = data.reduce((acc, point) => acc + point.y, 0);
+    const average = sum / data.length;
+    
+    // Create a container for the chart and wandering info
+    const container = document.getElementById(`${canvasId}Container`);
+    if (container) {
+        // Add or update wandering info element
+        let wanderingInfo = container.querySelector('.wandering-info');
+        if (!wanderingInfo) {
+            wanderingInfo = document.createElement('div');
+            wanderingInfo.className = 'wandering-info';
+            container.appendChild(wanderingInfo);
+        }
+        
+        // Update wandering info text with detailed information
+        if (wanderingPercentage > 0.1) {
+            const impact = wanderingPercentage > 5 ? 'High' : 
+                          wanderingPercentage > 2 ? 'Moderate' : 'Low';
+            
+            wanderingInfo.innerHTML = `
+                <div class="wandering-details">
+                    <div class="wandering-title">Baseline Wandering Analysis</div>
+                    <div class="wandering-metric">Wandering Percentage: ${wanderingPercentage.toFixed(2)}%</div>
+                    <div class="wandering-metric">Average Voltage: ${average.toFixed(3)}V</div>
+                    <div class="wandering-metric">Impact Level: ${impact}</div>
+                    <div class="wandering-note">${getWanderingNote(label, wanderingPercentage)}</div>
+                </div>
+            `;
+            wanderingInfo.style.display = 'block';
+        } else {
+            wanderingInfo.style.display = 'none';
+        }
+    }
     
     return new Chart(ctx, {
         type: 'line',
         data: {
-            datasets: [{
-                label: label,
-                data: data,
-                steppedLine: 'before',
-                borderColor: 'rgb(75, 192, 192)',
-                borderWidth: 2,
-                fill: false,
-                pointRadius: 0
-            }]
+            datasets: [
+                {
+                    label: label,
+                    data: data,
+                    steppedLine: 'before',
+                    borderColor: 'rgb(75, 192, 192)',
+                    borderWidth: 2,
+                    fill: false,
+                    pointRadius: 0
+                },
+                {
+                    label: 'Baseline',
+                    data: data.map(point => ({ x: point.x, y: average })),
+                    borderColor: 'rgba(255, 0, 0, 0.5)',
+                    borderWidth: 1,
+                    borderDash: [5, 5],
+                    fill: false,
+                    pointRadius: 0,
+                    hidden: wanderingPercentage <= 0.1
+                }
+            ]
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false,
+            maintainAspectRatio: true,
+            aspectRatio: 2,
+            layout: {
+                padding: {
+                    top: 10,
+                    right: 10,
+                    bottom: 10,
+                    left: 10
+                }
+            },
             scales: {
                 x: {
                     type: 'linear',
@@ -538,7 +607,6 @@ function renderWaveform(canvasId, label, data) {
                         text: 'Time (seconds)'
                     },
                     min: 0,
-                    // Set max to binary sequence length
                     max: data.length > 0 ? Math.ceil(data[data.length - 1].x) : 10
                 },
                 y: {
@@ -550,9 +618,40 @@ function renderWaveform(canvasId, label, data) {
                     }
                 }
             },
-            animation: false // Disable default animation
+            animation: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',
+                    labels: {
+                        usePointStyle: true,
+                        pointStyle: 'line'
+                    }
+                }
+            }
         }
     });
+}
+
+function getWanderingNote(label, percentage) {
+    if (percentage <= 0.1) return "No significant baseline wandering detected.";
+    
+    switch(label) {
+        case 'NRZ-L':
+            return "Long sequences of 1s or 0s can cause baseline wandering. Consider using AMI or Manchester encoding for better baseline stability.";
+        case 'NRZ-I':
+            return "Baseline wandering may occur with certain bit patterns. Consider using AMI or Manchester encoding for better baseline stability.";
+        case 'RZ':
+            return "Return-to-zero feature helps reduce baseline wandering, but it may still occur with imbalanced data.";
+        case 'AMI':
+            return "Alternate Mark Inversion helps maintain baseline stability by alternating pulse polarities.";
+        case 'Pseudoternary':
+            return "Similar to AMI, pseudoternary encoding helps maintain baseline stability through alternating pulses.";
+        case 'Manchester':
+            return "Manchester encoding inherently maintains baseline stability due to its transition-based encoding.";
+        default:
+            return "Baseline wandering may affect signal integrity and clock recovery.";
+    }
 }
 
 // Function to render animated waveforms
@@ -592,3 +691,20 @@ let rzChartInstance = null;
 let amiChartInstance = null;
 let pseudoternaryChartInstance = null;
 let manchesterChartInstance = null;
+
+// Function to toggle description visibility
+function toggleDescription(descId) {
+    const description = document.getElementById(descId);
+    description.classList.toggle('active');
+    
+    // Update button icon
+    const button = description.previousElementSibling;
+    const icon = button.querySelector('i');
+    if (description.classList.contains('active')) {
+        icon.classList.remove('fa-info-circle');
+        icon.classList.add('fa-times-circle');
+    } else {
+        icon.classList.remove('fa-times-circle');
+        icon.classList.add('fa-info-circle');
+    }
+}
